@@ -1,0 +1,29 @@
+library(vegan)
+fullmat<-read.delim("../meta/OTUSmontañas.txt")
+## Raw data and plotting
+m <- betadiver(fullmat)
+plot(m)
+## The indices
+betadiver(help=TRUE)
+## The basic Whittaker index
+d <- betadiver(fullmat, "w")
+## This should be equal to Sorensen index (binary Bray-Curtis in
+## vegan)
+range(d - vegdist(fullmat, binary=TRUE))
+H <- diversity(fullmat)
+simp <- diversity(fullmat, "simpson")
+invsimp <- diversity(fullmat, "inv")
+## Unbiased Simpson (Hurlbert 1971, eq. 5) with rarefy:
+unbias.simp <- rarefy(fullmat, 2) - 1
+## Fisher alpha
+alpha <- fisher.alpha(fullmat)
+## Plot all
+pairs(cbind(H, simp, invsimp, unbias.simp, alpha), pch="+", col="blue")
+## Species richness (S) and Pielous evenness (J):
+S <- specnumber(fullmat) ## rowSums(fullmat > 0) does the same...
+J <- H/log(S)
+#### Riqueza de especies
+S <- specnumber(fullmat) # observed number of species
+(raremax <- min(rowSums(fullmat)))
+Srare <- rarefy(fullmat, raremax)
+plot(S, Srare, xlab = "Observed No. of Species", ylab = "Rarefied No. of Species")
